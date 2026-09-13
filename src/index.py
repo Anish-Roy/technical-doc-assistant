@@ -3,7 +3,9 @@
 import os
 
 import tiktoken
+from typing import cast
 from chromadb.api.models.Collection import Collection
+from chromadb.api.types import PyEmbeddings
 from dotenv import load_dotenv
 from openai import OpenAI
 from tenacity import retry, stop_after_attempt
@@ -65,6 +67,7 @@ def load_collection(path: str = CHROMA_DIR, name: str = COLLECTION_NAME) -> Coll
     return db.get_collection(name=name)
 
 
+# creates a new collection everytime, deleting the previous one with the same name
 def build_index(
     chunks: list[Chunk],
     client: OpenAI,
@@ -77,11 +80,12 @@ def build_index(
     db = chromadb.PersistentClient(path=path)
     if name in [collection.name for collection in db.list_collections()]:
         db.delete_collection(name)
-    collection = db.create_collection(name=name, metadata={"hnsw:space": "cosine"})
+
+    collection = get_collection(path=path, name=name)
     collection.add(
         ids=[chunk.chunk_id for chunk in chunks],
         documents=[chunk.text for chunk in chunks],
-        embeddings=embeddings,
+        embeddings=cast(PyEmbeddings, embeddings),
         metadatas=[{"doc_id": chunk.doc_id, "token_count": chunk.token_count} for chunk in chunks],
     )
     return len(chunks)

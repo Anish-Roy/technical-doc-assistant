@@ -1,22 +1,14 @@
 # Corpus fetch notes
 
-- Source: https://github.com/pydantic/pydantic (sparse checkout of `docs/`)
-- Ref: tag `v2.13.5` (latest stable v2 release on 2026-09-13)
-- Commit: `001dea020e0809844e5b17666432c9135a976f46`
-- Files: 88 `.md` files copied to `data/raw/pydantic/`, relative paths preserved.
-  Assets (`img/`, `logos/`, `*.png/svg`) excluded.
-- The 4 `.html` files under `docs/theme/` and `docs/plugins/` are MkDocs theme
-  scaffolding, not content — excluded. The loader is `.md`-only (deliberate
-  deviation from PLAN.md Phase 1's "`.md` / `.html`", verified against the corpus).
-- URL rule (approximate): `data/raw/pydantic/<page>.md` maps to
-  `https://docs.pydantic.dev/latest/<page>/`; `index.md` maps to the section root.
-  Rule-based guess, not parsed from the `mkdocs.yml` nav.
+- Source: `https://pydantic.dev/docs/validation/latest/llms.txt` index + per-page markdown fetched via `src/download.py` (links extracted from the index, saved as local `.md` files).
+- Fetched: 2026-09-13. Files: 90 `.md` files under `data/raw/pydantic/`, every file nested as `<section>/.../index.md` (e.g. `concepts/models/index.md`).
+- Each file starts with an agent preamble (documentation-index blockquote + `## Querying This Documentation` + `---` separator). The loader strips this
+  preamble; it is not content.
+- URL rule (approximate): `data/raw/pydantic/<page>/index.md` maps to `https://pydantic.dev/docs/validation/latest/<page>/`; a root `index.md` maps to the section root. Rule-based guess, not parsed from nav.
 
 Reproduce:
 
 ```sh
-git clone --depth 1 --branch v2.13.5 --filter=blob:none --sparse \
-  https://github.com/pydantic/pydantic.git pydantic-docs
-git -C pydantic-docs sparse-checkout set docs
-# copy *.md from pydantic-docs/docs to data/raw/pydantic, preserving relative paths
+uv run python -m src.download
+# writes data/raw/pydantic/<section>/.../index.md (90 files)
 ```

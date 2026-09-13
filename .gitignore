@@ -13,3 +13,9 @@ trace.jsonl
 data/index/
 chroma_db/
 
+# Build + test artifacts
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+

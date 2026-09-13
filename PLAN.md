@@ -12,7 +12,8 @@ Scope: Markdown/HTML ingestion → fixed chunking → dense-only top-k → singl
 - Deps: `openai, chromadb, tiktoken, pydantic, click, python-dotenv`
 
 ## Phase 1 — Ingestion + Parsing
-- Load `.md` / `.html` from `data/raw/pydantic/`
+- Load `.md` from `data/raw/pydantic/` (`.md`-only: the 4 `.html` files in the
+  upstream `docs/` tree are MkDocs theme scaffolding, not content)
 - Strip nav/boilerplate, keep `title, url, text`
 - Output: `Document{doc_id, title, url, text}`
 

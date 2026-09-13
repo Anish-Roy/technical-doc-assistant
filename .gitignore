@@ -13,6 +13,9 @@ trace.jsonl
 data/index/
 chroma_db/
 
+# Corpus (fetch locally via data/raw/FETCH.md, never commit)
+data/raw/pydantic/
+
 # Build + test artifacts
 *.egg-info/
 dist/

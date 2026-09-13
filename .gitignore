@@ -18,4 +18,6 @@ chroma_db/
 dist/
 build/
 .pytest_cache/
+.ruff_cache/
+.uv/
 

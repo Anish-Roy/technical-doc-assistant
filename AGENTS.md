@@ -65,7 +65,7 @@ class RetrievalManagerFactory(BaseRetriever):  # over-engineered, do not do this
 ## 7. Tests + Checks
 - 3–5 unit tests max for baseline: chunk overlap math, deterministic IDs, prompt truncation.
 - Smoke test is the gate: `python -m src ingest` + 5 sample queries return plausible answers.
-- Before commit: `ruff check src/` passes, CLI runs from fresh `venv`.
+- Before commit: `ruff check src/` passes, CLI runs from fresh env (`uv sync --extra dev`, then `uv run ...`).
 
 ## 8. Adding an Extension
 New technique = new function + CLI flag, not a rewrite. Example: `def rrf_fuse(...)` in `retrieve.py`, enabled with `--hybrid`. Baseline path must keep working untouched.

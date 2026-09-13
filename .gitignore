@@ -13,7 +13,3 @@ trace.jsonl
 data/index/
 chroma_db/
 
-# Personal docs (local-only, never commit)
-*.md
-!README.md
-

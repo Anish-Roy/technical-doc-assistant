@@ -1,0 +1,8 @@
+README.md
+pyproject.toml
+src/__init__.py
+technical_doc_assistant.egg-info/PKG-INFO
+technical_doc_assistant.egg-info/SOURCES.txt
+technical_doc_assistant.egg-info/dependency_links.txt
+technical_doc_assistant.egg-info/requires.txt
+technical_doc_assistant.egg-info/top_level.txt

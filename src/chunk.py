@@ -8,9 +8,10 @@ from src.models import Chunk, Document
 
 CHUNK_SIZE = 512
 CHUNK_OVERLAP = 50
-ENCODING_NAME = "cl100k_base"
+ENCODING_NAME = "cl100k_base"  # encoding for text-embedding-3-small
 
 
+# offset is the token count from where the chunk starts, so it is a number unique to each chunk
 def make_chunk_id(doc_id: str, offset: int) -> str:
     return hashlib.sha1(f"{doc_id}{offset}".encode("utf-8")).hexdigest()[:12]
 

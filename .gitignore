@@ -1,0 +1,15 @@
+# Secrets + local config
+.env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# RAG outputs (generated, never commit)
+trace.jsonl
+data/index/
+chroma_db/
+

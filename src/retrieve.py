@@ -38,6 +38,11 @@ def retrieve(
     vec = embed_query(query, active_client)
     coll = load_collection(path, name)
     result = coll.query(query_embeddings=[vec], n_results=k)
+
+    # ChromaDB labels all 3 fields as Optional, however returns all 3 by default.
+    # Fail fast if any is missing so Pylance and readers know they exist below.
+    if result["documents"] is None or result["distances"] is None or result["metadatas"] is None:
+        raise KeyError("Chroma query result is missing documents/distances/metadatas")
     ids = result["ids"][0]
     documents = result["documents"][0]
     distances = result["distances"][0]
@@ -46,7 +51,12 @@ def retrieve(
     for chunk_id, text, distance, meta in zip(ids, documents, distances, metadatas):
         if meta is None or "doc_id" not in meta:
             raise KeyError(f"chunk {chunk_id} metadata is missing doc_id")
+        doc_id = meta["doc_id"]
+        # meta["doc_id"] has a Union type : str | int | float | bool | SparseVector | list[...] | None
+        # Hit.doc_id is always a str, so Pylance safe check
+        if not isinstance(doc_id, str):
+            raise KeyError(f"chunk {chunk_id} doc_id is not a string: {doc_id!r}")
         hits.append(
-            Hit(chunk_id=chunk_id, doc_id=meta["doc_id"], score=1.0 - distance, text=text)
+            Hit(chunk_id=chunk_id, doc_id=doc_id, score=1.0 - distance, text=text)
         )
     return hits

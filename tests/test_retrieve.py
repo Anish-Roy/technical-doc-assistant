@@ -67,3 +67,43 @@ def test_retrieve_rejects_empty_query(monkeypatch: pytest.MonkeyPatch) -> None:
         retrieve("   ")
     with pytest.raises(ValueError):
         retrieve("ok query", k=0)
+
+
+def test_retrieve_raises_when_chroma_omits_fields(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(retrieve_mod, "embed_query", lambda query, client: [0.5, 0.5])
+
+    def query_missing(query_embeddings: list[list[float]], n_results: int) -> dict[str, Any]:
+        assert len(query_embeddings) == 1
+        return {"ids": [["c1"]], "documents": None, "distances": None, "metadatas": None}
+
+    monkeypatch.setattr(
+        retrieve_mod,
+        "load_collection",
+        lambda path, name: SimpleNamespace(query=query_missing),
+    )
+    stub_client: Any = object()
+
+    with pytest.raises(KeyError):
+        retrieve("some query", client=stub_client)
+
+    def query_bad_doc_id(
+        query_embeddings: list[list[float]], n_results: int
+    ) -> dict[str, Any]:
+        assert len(query_embeddings) == 1
+        return {
+            "ids": [["c1"]],
+            "documents": [["text one"]],
+            "distances": [[0.1]],
+            "metadatas": [[{"doc_id": 123}]],
+        }
+
+    monkeypatch.setattr(
+        retrieve_mod,
+        "load_collection",
+        lambda path, name: SimpleNamespace(query=query_bad_doc_id),
+    )
+
+    with pytest.raises(KeyError):
+        retrieve("some query", client=stub_client)

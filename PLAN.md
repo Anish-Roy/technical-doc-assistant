@@ -47,18 +47,19 @@ Scope: Markdown/HTML ingestion → fixed chunking → dense-only top-k → singl
 ## Phase 7 — Baseline Eval
 Build the complete evaluation pipeline alongside the naive RAG system, so later modifications can be re-tested with one command and compared against recorded baseline scores.
 
-- Golden set `data/eval/golden.jsonl` (~15 hand-labeled queries, tracked in git), one JSON object per line:
+- Golden set `data/eval/golden.jsonl` (50–60 labeled Pydantic queries, tracked in git), one JSON object per line:
   `{query_id, query, category, relevant_chunk_ids, expected_claims[], must_cite}`
-- Categories: `v2-only`, `migration`, `hard/ambiguous`, `unanswerable`. Unanswerable rows carry empty `expected_claims` and grade on correct abstention.
+- Categories: `v2-only`, `v1-only`, `migration`, `hard/ambiguous`, `unanswerable`. Unanswerable rows carry empty `expected_claims` and grade on correct abstention.
 - `relevant_chunk_ids` label against baseline chunking (deterministic `sha1` IDs). `expected_claims` are short atomic facts for the judge, not full reference answers.
 - `src/eval.py` (pure functions, each ≤~40 lines, no new abstractions):
+  - Metrics: Recall@5, nDCG@10, MRR + citation precision
   - `recall_at_k(hits, relevant, k)`, `reciprocal_rank(...)`, `ndcg_at_k(...)` over existing `retrieve()` hits — deterministic, unit-testable.
   - `grade_answer(query, answer, expected_claims)` — single fixed rubric prompt to `gpt-4o-mini` at `temperature=0`; returns per-claim hit/miss + citation-present flag. Retry via existing `tenacity` pattern (network/LLM calls only).
   - `run_eval(k=5)` — runs the golden set through existing `retrieve()` + `generate()`, aggregates retrieval means (Recall@5, MRR, nDCG@10) + judge means, writes `evals/baseline.json`.
 - `models.py`: add `EvalQuery`, `EvalScore` schemas only. `cli.py`: add `eval` command. No changes to Phase 1–5 functions.
 - Record `evals/baseline.json` (tracked in git — JSON stays committable under the `*.md` ignore): holds `git_sha`, timestamp, model names/versions, per-query scores + aggregate means.
 - Gate: baseline runs green and `baseline.json` is merged to `main` before any EXTENSIONS.md work. Every later modification re-runs the same `python -m src eval` on the same golden set and reports delta-vs-baseline.
-- Cost note: one run ≈ 15 generations + 15 judge calls; judge scores may wobble run-to-run — mitigate with `temperature=0` and the recorded model version.
+- Judge scores may wobble run-to-run — mitigate with `temperature=0` and the recorded model version.
 - Tests: 2 unit tests (metric math on a toy ranking, `baseline.json` schema round-trip).
 - Done when: `python -m src eval` completes and retrieval means + judge means are recorded in `evals/baseline.json`.
 

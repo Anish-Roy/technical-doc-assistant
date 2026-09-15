@@ -24,3 +24,6 @@ build/
 .ruff_cache/
 .uv/
 
+
+data/eval/candidates.jsonl
+scripts/

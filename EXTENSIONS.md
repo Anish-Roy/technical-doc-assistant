@@ -25,9 +25,7 @@ Advanced retrieval engineering + eval lab. Build only after `PLAN.md` baseline w
 - `doc_id` + content hash, chunk lineage, tombstones; delta re-embed only
 - Deferred: baseline uses full rebuild
 
-## 7. Eval Lab
-- 50–60 labeled Pydantic queries: v2-only, v1-only, migration, hard/ambiguous, unanswerable
-- Metrics: Recall@5, nDCG@10, MRR + citation precision
+## 7. Eval Lab experiiments
 - Notebooks: `01_retrieval.ipynb`, `02_experiments.ipynb` with 4 experiments (chunk size, retriever type, rerank, version filter)
 
 ## 8. Tracing + Failure Classification

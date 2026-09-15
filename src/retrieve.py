@@ -52,7 +52,8 @@ def retrieve(
         if meta is None or "doc_id" not in meta:
             raise KeyError(f"chunk {chunk_id} metadata is missing doc_id")
         doc_id = meta["doc_id"]
-        # meta["doc_id"] has a Union type : str | int | float | bool | SparseVector | list[...] | None
+        # meta["doc_id"] has a Union type : 
+        # str | int | float | bool | SparseVector | list[...] | None
         # Hit.doc_id is always a str, so Pylance safe check
         if not isinstance(doc_id, str):
             raise KeyError(f"chunk {chunk_id} doc_id is not a string: {doc_id!r}")

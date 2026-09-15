@@ -14,7 +14,6 @@ def iter_source_files(root: Path = DOCS_ROOT) -> list[Path]:
     return sorted(root.rglob("*.md"))
 
 
-# remove frontmatter (leading --- YAML block if present)
 def strip_frontmatter(text: str) -> str:
     lines = text.splitlines(keepends=True)
     if not lines or lines[0].strip() != "---":
